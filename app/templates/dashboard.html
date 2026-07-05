@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}JOB SCHEDULER{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', path='/css/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="dashboard-title">
+                    <span class="greeting" id="greetingText">JOB SCHEDULER</span>
+                </h1>
+                <p class="dashboard-subtitle text-muted">
+                    Here's what's happening with your scheduler today.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <div class="d-flex justify-content-md-end align-items-center gap-3">
+                    <!-- Live Clock -->
+                    <div class="live-clock glass-card">
+                        <i class="bi bi-clock"></i>
+                        <span id="liveClock">00:00:00</span>
+                    </div>
+                    
+                    <!-- Date Display -->
+                    <div class="date-display glass-card">
+                        <i class="bi bi-calendar3"></i>
+                        <span id="liveDate">Monday, Jan 1, 2024</span>
+                    </div>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button class="btn btn-icon glass-card dark-mode-toggle" id="darkModeToggle" title="Toggle Dark/Light Mode">
+                        <i class="bi bi-moon-stars-fill"></i>
+                    </button>
+                    
+                    <!-- Refresh Button -->
+                    <button class="btn btn-icon glass-card refresh-btn" id="refreshDashboard" title="Refresh Dashboard">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row stats-cards mb-4">
+        <!-- Total Jobs -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-primary-subtle">
+                        <i class="bi bi-briefcase-fill text-primary"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Jobs</div>
+                        <div class="stat-value" id="totalJobs" data-target="0">
+                            <div class="skeleton-loader skeleton-value"></div>
+                        </div>
+                        <div class="stat-trend text-success">
+                            <i class="bi bi-arrow-up-short"></i>
+                            <span id="totalJobsTrend">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Running Jobs -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-info-subtle">
+                        <i class="bi bi-play-circle-fill text-info"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Running Jobs</div>
+                        <div class="stat-value" id="runningJobs" data-target="0">
+                            <div class="skeleton-loader skeleton-value"></div>
+                        </div>
+                        <div class="stat-trend text-info">
+                            <i class="bi bi-activity"></i>
+                            <span id="runningJobsLabel">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Jobs -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-success-subtle">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Completed</div>
+                        <div class="stat-value" id="completedJobs" data-target="0">
+                            <div class="skeleton-loader skeleton-value"></div>
+                        </div>
+                        <div class="stat-trend text-success">
+                            <i class="bi bi-arrow-up-short"></i>
+                            <span id="completedJobsTrend">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Failed Jobs -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-danger-subtle">
+                        <i class="bi bi-x-circle-fill text-danger"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Failed</div>
+                        <div class="stat-value" id="failedJobs" data-target="0">
+                            <div class="skeleton-loader skeleton-value"></div>
+                        </div>
+                        <div class="stat-trend text-danger">
+                            <i class="bi bi-arrow-down-short"></i>
+                            <span id="failedJobsTrend">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workers Online -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-warning-subtle">
+                        <i class="bi bi-cpu-fill text-warning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Workers</div>
+                        <div class="stat-value" id="workersOnline" data-target="0">
+                            <div class="skeleton-loader skeleton-value"></div>
+                        </div>
+                        <div class="stat-trend text-warning">
+                            <i class="bi bi-wifi"></i>
+                            <span id="workersOnlineLabel">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Queues -->
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-secondary-subtle">
+                        <i class="bi bi-stack text-secondary"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Queues</div>
+                        <div class="stat-value" id="totalQueues" data-target="0">
+                            <div class="skeleton-loader skeleton-value"></div>
+                        </div>
+                        <div class="stat-trend text-secondary">
+                            <i class="bi bi-collection"></i>
+                            <span id="totalQueuesLabel">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Job Status Distribution Pie Chart -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="chart-card glass-card">
+                <div class="chart-card-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-pie-chart-fill text-primary"></i>
+                        Job Status Distribution
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="btn btn-sm btn-icon" onclick="dashboard.refreshChart('jobStatusChart')">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-card-body">
+                    <div id="jobStatusChart" class="chart-container">
+                        <div class="skeleton-loader skeleton-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Worker Utilization Chart -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="chart-card glass-card">
+                <div class="chart-card-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-bar-chart-fill text-info"></i>
+                        Worker Utilization
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="btn btn-sm btn-icon" onclick="dashboard.refreshChart('workerUtilChart')">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-card-body">
+                    <div id="workerUtilChart" class="chart-container">
+                        <div class="skeleton-loader skeleton-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Queue Throughput Chart -->
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="chart-card glass-card">
+                <div class="chart-card-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-graph-up text-success"></i>
+                        Queue Throughput
+                    </h5>
+                    <div class="chart-actions">
+                        <button class="btn btn-sm btn-icon" onclick="dashboard.refreshChart('queueThroughputChart')">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-card-body">
+                    <div id="queueThroughputChart" class="chart-container">
+                        <div class="skeleton-loader skeleton-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Completion Trend Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="chart-card glass-card">
+                <div class="chart-card-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-activity text-warning"></i>
+                        Job Completion Trend
+                    </h5>
+                    <div class="chart-actions">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary active" data-period="7d" onclick="dashboard.updateTrendPeriod('7d', this)">7 Days</button>
+                            <button class="btn btn-outline-secondary" data-period="30d" onclick="dashboard.updateTrendPeriod('30d', this)">30 Days</button>
+                            <button class="btn btn-outline-secondary" data-period="90d" onclick="dashboard.updateTrendPeriod('90d', this)">90 Days</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card-body">
+                    <div id="jobCompletionTrendChart" class="chart-container" style="height: 400px;">
+                        <div class="skeleton-loader skeleton-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="row">
+        <!-- Recent Jobs Table -->
+        <div class="col-xl-6 mb-4">
+            <div class="table-card glass-card">
+                <div class="table-card-header">
+                    <h5 class="table-title">
+                        <i class="bi bi-list-check text-primary"></i>
+                        Recent Jobs
+                    </h5>
+                    <a href="/jobs" class="btn btn-sm btn-outline-primary" data-app-link>View All</a>
+                </div>
+                <div class="table-card-body">
+                    <div class="table-responsive">
+                        <table id="recentJobsTable" class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Worker</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workers Table -->
+        <div class="col-xl-6 mb-4">
+            <div class="table-card glass-card">
+                <div class="table-card-header">
+                    <h5 class="table-title">
+                        <i class="bi bi-cpu text-warning"></i>
+                        Active Workers
+                    </h5>
+                    <a href="/workers" class="btn btn-sm btn-outline-primary" data-app-link>View All</a>
+                </div>
+                <div class="table-card-body">
+                    <div class="table-responsive">
+                        <table id="workersTable" class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Worker ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Queue</th>
+                                    <th>Uptime</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Queues Table -->
+        <div class="col-12 mb-4">
+            <div class="table-card glass-card">
+                <div class="table-card-header">
+                    <h5 class="table-title">
+                        <i class="bi bi-stack text-secondary"></i>
+                        Active Queues
+                    </h5>
+                    <a href="/queues" class="btn btn-sm btn-outline-primary" data-app-link>View All</a>
+                </div>
+                <div class="table-card-body">
+                    <div class="table-responsive">
+                        <table id="queuesTable" class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Queue Name</th>
+                                    <th>Active Jobs</th>
+                                    <th>Waiting Jobs</th>
+                                    <th>Completed</th>
+                                    <th>Failed</th>
+                                    <th>Workers</th>
+                                    <th>Avg Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                        <div class="skeleton-loader skeleton-row"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/dashboard.js') }}"></script>
+{% endblock %}

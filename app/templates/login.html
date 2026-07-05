@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Login - JobScheduler Pro{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', path='/css/login.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="bi bi-cube-fill"></i>
+            </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your account to continue</p>
+        </div>
+        
+        <form id="loginForm" class="auth-form" novalidate>
+            <div class="mb-4">
+                <label for="email" class="form-label">
+                    <i class="bi bi-envelope-fill"></i> Email Address
+                </label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text glass-input">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input 
+                        type="email" 
+                        class="form-control glass-input" 
+                        id="email" 
+                        name="email" 
+                        placeholder="you@example.com" 
+                        required 
+                        autocomplete="email"
+                        autofocus
+                    >
+                </div>
+                <div class="invalid-feedback" id="emailFeedback"></div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="password" class="form-label">
+                    <i class="bi bi-shield-lock-fill"></i> Password
+                </label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text glass-input">
+                        <i class="bi bi-key"></i>
+                    </span>
+                    <input 
+                        type="password" 
+                        class="form-control glass-input" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password" 
+                        required 
+                        autocomplete="current-password"
+                    >
+                    <button 
+                        class="btn btn-outline-secondary glass-input toggle-password" 
+                        type="button" 
+                        data-target="password"
+                    >
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+                <div class="invalid-feedback" id="passwordFeedback"></div>
+            </div>
+            
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="rememberMe" 
+                        name="rememberMe"
+                    >
+                    <label class="form-check-label" for="rememberMe">
+                        Remember me
+                    </label>
+                </div>
+                <a href="#" class="text-decoration-none forgot-password">
+                    Forgot Password?
+                </a>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg w-100 auth-btn" id="loginBtn">
+                <span class="btn-text">Sign In</span>
+                <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p class="mb-0">
+                Don't have an account? 
+                <a href="/register" class="auth-link">Create Account</a>
+            </p>
+        </div>
+    </div>
+    
+    <div class="auth-background">
+        <div class="glass-circle circle-1"></div>
+        <div class="glass-circle circle-2"></div>
+        <div class="glass-circle circle-3"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = loginBtn.querySelector('.btn-text');
+    const spinner = loginBtn.querySelector('.spinner-border');
+    const togglePasswordBtn = document.querySelector('.toggle-password');
+    
+    // Password visibility toggle
+    togglePasswordBtn.addEventListener('click', function() {
+        const passwordInput = document.getElementById(this.dataset.target);
+        const icon = this.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    });
+    
+    // Email validation
+    function validateEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    }
+    
+    // Show field error
+    function showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const feedback = document.getElementById(fieldId + 'Feedback');
+        field.classList.add('is-invalid');
+        feedback.textContent = message;
+        feedback.style.display = 'block';
+    }
+    
+    // Clear field error
+    function clearFieldError(fieldId) {
+        const field = document.getElementById(fieldId);
+        const feedback = document.getElementById(fieldId + 'Feedback');
+        field.classList.remove('is-invalid');
+        feedback.textContent = '';
+        feedback.style.display = 'none';
+    }
+    
+    // Set loading state
+    function setLoading(loading) {
+        if (loading) {
+            loginBtn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+        } else {
+            loginBtn.disabled = false;
+            btnText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        }
+    }
+    
+    // Form submission
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        
+        // Clear previous errors
+        clearFieldError('email');
+        clearFieldError('password');
+        
+        // Validate email
+        if (!email) {
+            showFieldError('email', 'Email is required');
+            return;
+        }
+        if (!validateEmail(email)) {
+            showFieldError('email', 'Please enter a valid email address');
+            return;
+        }
+        
+        // Validate password
+        if (!password) {
+            showFieldError('password', 'Password is required');
+            return;
+        }
+        if (password.length < 6) {
+            showFieldError('password', 'Password must be at least 6 characters');
+            return;
+        }
+        
+        setLoading(true);
+        
+        try {
+            const response = await api.post('/auth/login', {
+                email: email,
+                password: password
+            });
+            
+            // Store token
+            if (response.access_token) {
+                if (rememberMe) {
+                    localStorage.setItem('access_token', response.access_token);
+                    localStorage.setItem('remember_me', 'true');
+                } else {
+                    sessionStorage.setItem('access_token', response.access_token);
+                }
+                
+                // Store user info if available
+                if (response.user) {
+                    localStorage.setItem('user', JSON.stringify(response.user));
+                }
+                
+                // Success notification
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Login Successful',
+                    text: 'Redirecting to dashboard...',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                
+                // Redirect to dashboard
+                window.location.href = '/dashboard';
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            
+            let errorMessage = 'An error occurred during login';
+            
+            if (error.status === 401) {
+                errorMessage = 'Invalid email or password';
+            } else if (error.status === 422) {
+                if (error.data && error.data.detail) {
+                    errorMessage = error.data.detail;
+                }
+            } else if (error.data && error.data.detail) {
+                errorMessage = error.data.detail;
+            }
+            
+            await Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: errorMessage
+            });
+        } finally {
+            setLoading(false);
+        }
+    });
+    
+    // Clear errors on input
+    document.getElementById('email').addEventListener('input', function() {
+        clearFieldError('email');
+    });
+    
+    document.getElementById('password').addEventListener('input', function() {
+        clearFieldError('password');
+    });
+});
+</script>
+{% endblock %}

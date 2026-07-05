@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Jobs - JobScheduler Pro{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Jobs</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="bi bi-briefcase-fill text-primary"></i>
+                    Job Management
+                </h1>
+                <p class="page-subtitle text-muted">Create, monitor, and manage jobs</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <button class="btn btn-primary" id="createJobBtn">
+                    <i class="bi bi-plus-lg"></i> Create Job
+                </button>
+                <button class="btn btn-outline-secondary ms-2" id="refreshJobsBtn">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <div class="btn-group ms-2">
+                    <button class="btn btn-outline-danger" id="bulkCancelBtn" disabled>
+                        <i class="bi bi-x-circle"></i> Cancel Selected
+                    </button>
+                    <button class="btn btn-outline-danger" id="bulkDeleteBtn" disabled>
+                        <i class="bi bi-trash"></i> Delete Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Stats Cards -->
+    <div class="row job-stats mb-4">
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card filter-card" data-status="">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-primary-subtle">
+                        <i class="bi bi-briefcase text-primary"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">All Jobs</div>
+                        <div class="stat-value" id="allJobsCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card filter-card" data-status="pending">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-warning-subtle">
+                        <i class="bi bi-clock text-warning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Pending</div>
+                        <div class="stat-value" id="pendingJobsCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card filter-card" data-status="running">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-info-subtle">
+                        <i class="bi bi-play-circle text-info"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Running</div>
+                        <div class="stat-value" id="runningJobsCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card filter-card" data-status="completed">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-success-subtle">
+                        <i class="bi bi-check-circle text-success"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Completed</div>
+                        <div class="stat-value" id="completedJobsCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card filter-card" data-status="failed">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-danger-subtle">
+                        <i class="bi bi-x-circle text-danger"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Failed</div>
+                        <div class="stat-value" id="failedJobsCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+            <div class="stat-card glass-card filter-card" data-status="cancelled">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-secondary-subtle">
+                        <i class="bi bi-slash-circle text-secondary"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Cancelled</div>
+                        <div class="stat-value" id="cancelledJobsCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jobs Table -->
+    <div class="card glass-card">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-list-ul"></i> All Jobs
+            </h5>
+            <div class="d-flex gap-2 flex-wrap">
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control form-control-sm" id="jobSearch" placeholder="Search jobs...">
+                </div>
+                <select class="form-select form-select-sm" id="jobStatusFilter" style="width: 140px;">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="running">Running</option>
+                    <option value="completed">Completed</option>
+                    <option value="failed">Failed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select class="form-select form-select-sm" id="jobQueueFilter" style="width: 150px;">
+                    <option value="">All Queues</option>
+                </select>
+                <select class="form-select form-select-sm" id="jobSortBy" style="width: 150px;">
+                    <option value="created_at">Created Date</option>
+                    <option value="priority">Priority</option>
+                    <option value="status">Status</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="jobsTable" class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th width="40">
+                                <input type="checkbox" class="form-check-input" id="selectAllJobs">
+                            </th>
+                            <th>Job ID</th>
+                            <th>Name</th>
+                            <th>Queue</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Worker</th>
+                            <th>Progress</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div id="jobsPaginationInfo"></div>
+                <div id="jobsPagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Job Modal -->
+<div class="modal fade" id="createJobModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle"></i> Create New Job
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createJobForm">
+                    <div class="mb-3">
+                        <label class="form-label">Job Name *</label>
+                        <input type="text" class="form-control" id="jobName" required placeholder="e.g., Send Welcome Email">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Queue *</label>
+                            <select class="form-select" id="jobQueue" required></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="jobPriority">
+                                <option value="1">Low</option>
+                                <option value="2" selected>Normal</option>
+                                <option value="3">High</option>
+                                <option value="4">Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Job Type</label>
+                        <select class="form-select" id="jobType">
+                            <option value="default">Default</option>
+                            <option value="email">Email</option>
+                            <option value="report">Report Generation</option>
+                            <option value="backup">Backup</option>
+                            <option value="cleanup">Data Cleanup</option>
+                            <option value="api_call">API Call</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payload (JSON)</label>
+                        <textarea class="form-control" id="jobPayload" rows="5" placeholder='{"key": "value"}'></textarea>
+                        <small class="text-muted">Optional JSON payload for the job</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Max Retries</label>
+                            <input type="number" class="form-control" id="jobMaxRetries" value="3" min="0" max="10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Timeout (seconds)</label>
+                            <input type="number" class="form-control" id="jobTimeout" value="300" min="10" max="3600">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Schedule (Optional)</label>
+                        <input type="datetime-local" class="form-control" id="jobSchedule">
+                        <small class="text-muted">Leave empty for immediate execution</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveJobBtn">
+                    <i class="bi bi-check-lg"></i> Create Job
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Job Details Modal -->
+<div class="modal fade" id="jobDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-info-circle"></i> Job Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="jobDetailsContent"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/jobs.js') }}"></script>
+{% endblock %}

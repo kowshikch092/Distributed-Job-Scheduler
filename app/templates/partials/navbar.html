@@ -1,0 +1,197 @@
+<nav class="top-navbar">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <!-- Back button -->
+            <button class="btn btn-link back-btn me-2 d-inline-flex align-items-center gap-2" id="backButton" type="button" aria-label="Go back">
+                <i class="bi bi-arrow-left"></i>
+                <span class="d-none d-md-inline">Back</span>
+            </button>
+
+            <!-- Mobile sidebar toggle -->
+            <button class="btn btn-link sidebar-toggle d-lg-none me-3" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="d-none d-md-block">
+                <ol class="breadcrumb mb-0" id="appBreadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="/dashboard" class="text-decoration-none" data-app-link>
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    {% block breadcrumb %}{% endblock %}
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <!-- Search -->
+            <div class="search-box d-none d-md-flex">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" placeholder="Search...">
+            </div>
+            
+            <!-- Notifications -->
+            <div class="dropdown">
+                <button class="btn btn-link notification-btn position-relative" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end notification-dropdown">
+                    <div class="notification-header">
+                        <h6 class="mb-0">Notifications</h6>
+                        <a href="#" class="text-decoration-none small">Mark all read</a>
+                    </div>
+                    <div class="notification-list">
+                        <a href="#" class="notification-item unread">
+                            <div class="notification-icon bg-primary">
+                                <i class="bi bi-info-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="mb-0">System update completed</p>
+                                <small class="text-muted">2 minutes ago</small>
+                            </div>
+                        </a>
+                        <a href="#" class="notification-item unread">
+                            <div class="notification-icon bg-success">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="mb-0">Job completed successfully</p>
+                                <small class="text-muted">1 hour ago</small>
+                            </div>
+                        </a>
+                        <a href="#" class="notification-item">
+                            <div class="notification-icon bg-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="mb-0">Resource usage alert</p>
+                                <small class="text-muted">3 hours ago</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="notification-footer">
+                        <a href="#" class="text-decoration-none">View all notifications</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Menu -->
+            <div class="dropdown">
+                <button class="btn btn-link user-menu-btn d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                    <div class="user-avatar">
+                        <span id="userInitials">JD</span>
+                    </div>
+                    <div class="d-none d-md-block text-start">
+                        <div class="user-name" id="userName">John Doe</div>
+                        <div class="user-role" id="userRole">Administrator</div>
+                    </div>
+                    <i class="bi bi-chevron-down d-none d-md-block"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end user-dropdown">
+                    <div class="user-dropdown-header">
+                        <div class="user-avatar-lg">
+                            <span id="userInitialsLarge">JD</span>
+                        </div>
+                        <div>
+                            <div class="fw-bold" id="userNameLarge">John Doe</div>
+                            <div class="text-muted small" id="userEmailLarge">john@example.com</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="/profile" class="dropdown-item" data-app-link>
+                        <i class="bi bi-person"></i> Profile
+                    </a>
+                    <a href="/settings" class="dropdown-item" data-app-link>
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+                    <a href="/billing" class="dropdown-item" data-app-link>
+                        <i class="bi bi-credit-card"></i> Billing
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item text-danger" id="logoutBtn">
+                        <i class="bi bi-box-arrow-right"></i> Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const backButton = document.getElementById('backButton');
+    if (backButton) {
+        backButton.addEventListener('click', function() {
+            const referrer = document.referrer;
+
+            if (window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+
+            if (referrer && new URL(referrer).origin === window.location.origin) {
+                window.location.href = referrer;
+                return;
+            }
+
+            window.location.href = '/dashboard';
+        });
+    }
+
+    // Load user info
+    const userData = localStorage.getItem('user');
+    if (userData) {
+        try {
+            const user = JSON.parse(userData);
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User';
+            const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            
+            document.getElementById('userName').textContent = fullName;
+            document.getElementById('userNameLarge').textContent = fullName;
+            document.getElementById('userEmailLarge').textContent = user.email || '';
+            document.getElementById('userInitials').textContent = initials;
+            document.getElementById('userInitialsLarge').textContent = initials;
+            if (user.role) {
+                document.getElementById('userRole').textContent = user.role;
+            }
+        } catch (e) {
+            console.error('Error parsing user data:', e);
+        }
+    }
+    
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const result = await Swal.fire({
+            title: 'Sign Out',
+            text: 'Are you sure you want to sign out?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, sign out',
+            cancelButtonText: 'Cancel'
+        });
+        
+        if (result.isConfirmed) {
+            // Clear auth data
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('remember_me');
+            localStorage.removeItem('user');
+            sessionStorage.removeItem('access_token');
+            
+            window.location.href = '/login';
+        }
+    });
+    
+    // Mobile sidebar toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        });
+    }
+});
+</script>

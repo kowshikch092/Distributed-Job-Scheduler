@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Execution Logs - JobScheduler Pro{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Logs</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="bi bi-journal-text text-primary"></i>
+                    Execution Logs
+                </h1>
+                <p class="page-subtitle text-muted">Real-time system logs and job execution history</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <button class="btn btn-outline-secondary" id="pauseLogsBtn">
+                    <i class="bi bi-pause-fill"></i> Pause
+                </button>
+                <button class="btn btn-outline-primary ms-2" id="downloadLogsBtn">
+                    <i class="bi bi-download"></i> Download
+                </button>
+                <button class="btn btn-outline-danger ms-2" id="clearLogsBtn">
+                    <i class="bi bi-trash"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card glass-card">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Log Level</label>
+                            <select class="form-select" id="logLevelFilter">
+                                <option value="">All Levels</option>
+                                <option value="info">INFO</option>
+                                <option value="warning">WARNING</option>
+                                <option value="error">ERROR</option>
+                                <option value="debug">DEBUG</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Source</label>
+                            <select class="form-select" id="logSourceFilter">
+                                <option value="">All Sources</option>
+                                <option value="job">Job</option>
+                                <option value="worker">Worker</option>
+                                <option value="queue">Queue</option>
+                                <option value="system">System</option>
+                                <option value="api">API</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Time Range</label>
+                            <select class="form-select" id="logTimeFilter">
+                                <option value="15m">Last 15 minutes</option>
+                                <option value="1h">Last hour</option>
+                                <option value="6h">Last 6 hours</option>
+                                <option value="24h">Last 24 hours</option>
+                                <option value="7d">Last 7 days</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Search</label>
+                            <input type="text" class="form-control" id="logSearch" placeholder="Search logs...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-primary-subtle">
+                        <i class="bi bi-journal text-primary"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Entries</div>
+                        <div class="stat-value" id="totalLogEntries">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-danger-subtle">
+                        <i class="bi bi-exclamation-triangle text-danger"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Errors</div>
+                        <div class="stat-value text-danger" id="errorLogCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-warning-subtle">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Warnings</div>
+                        <div class="stat-value text-warning" id="warningLogCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-info-subtle">
+                        <i class="bi bi-info-circle text-info"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Info</div>
+                        <div class="stat-value text-info" id="infoLogCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Viewer -->
+    <div class="card glass-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-terminal"></i> Log Viewer
+                <span class="badge bg-primary ms-2" id="logCount">0</span>
+            </h5>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="autoScroll" checked>
+                <label class="form-check-label" for="autoScroll">Auto-scroll</label>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="log-viewer" id="logViewer">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-hourglass-split fs-1"></i>
+                    <p class="mt-2">Loading logs...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/logs.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block title %}Register - JobScheduler Pro{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', path='/css/login.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Get started with your free account</p>
+        </div>
+        
+        <form id="registerForm" class="auth-form" novalidate>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label for="firstName" class="form-label">
+                        <i class="bi bi-person-fill"></i> First Name
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control glass-input" 
+                        id="firstName" 
+                        name="firstName" 
+                        placeholder="John" 
+                        required
+                    >
+                    <div class="invalid-feedback" id="firstNameFeedback"></div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <label for="lastName" class="form-label">
+                        <i class="bi bi-person-fill"></i> Last Name
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control glass-input" 
+                        id="lastName" 
+                        name="lastName" 
+                        placeholder="Doe" 
+                        required
+                    >
+                    <div class="invalid-feedback" id="lastNameFeedback"></div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="email" class="form-label">
+                    <i class="bi bi-envelope-fill"></i> Email Address
+                </label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text glass-input">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input 
+                        type="email" 
+                        class="form-control glass-input" 
+                        id="email" 
+                        name="email" 
+                        placeholder="you@example.com" 
+                        required 
+                        autocomplete="email"
+                    >
+                </div>
+                <div class="invalid-feedback" id="emailFeedback"></div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="password" class="form-label">
+                    <i class="bi bi-shield-lock-fill"></i> Password
+                </label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text glass-input">
+                        <i class="bi bi-key"></i>
+                    </span>
+                    <input 
+                        type="password" 
+                        class="form-control glass-input" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Create a strong password" 
+                        required 
+                        autocomplete="new-password"
+                    >
+                    <button 
+                        class="btn btn-outline-secondary glass-input toggle-password" 
+                        type="button" 
+                        data-target="password"
+                    >
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+                <div class="invalid-feedback" id="passwordFeedback"></div>
+                
+                <!-- Password strength meter -->
+                <div class="password-strength mt-2">
+                    <div class="strength-meter">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <small class="strength-text" id="strengthText"></small>
+                    <ul class="password-requirements mt-2">
+                        <li id="reqLength" class="text-muted">
+                            <i class="bi bi-circle"></i> At least 8 characters
+                        </li>
+                        <li id="reqUppercase" class="text-muted">
+                            <i class="bi bi-circle"></i> One uppercase letter
+                        </li>
+                        <li id="reqLowercase" class="text-muted">
+                            <i class="bi bi-circle"></i> One lowercase letter
+                        </li>
+                        <li id="reqNumber" class="text-muted">
+                            <i class="bi bi-circle"></i> One number
+                        </li>
+                        <li id="reqSpecial" class="text-muted">
+                            <i class="bi bi-circle"></i> One special character
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="confirmPassword" class="form-label">
+                    <i class="bi bi-shield-check"></i> Confirm Password
+                </label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text glass-input">
+                        <i class="bi bi-key-fill"></i>
+                    </span>
+                    <input 
+                        type="password" 
+                        class="form-control glass-input" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Confirm your password" 
+                        required 
+                        autocomplete="new-password"
+                    >
+                    <button 
+                        class="btn btn-outline-secondary glass-input toggle-password" 
+                        type="button" 
+                        data-target="confirmPassword"
+                    >
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+                <div class="invalid-feedback" id="confirmPasswordFeedback"></div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="form-check">
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="agreeTerms" 
+                        name="agreeTerms" 
+                        required
+                    >
+                    <label class="form-check-label" for="agreeTerms">
+                        I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                    </label>
+                </div>
+                <div class="invalid-feedback" id="agreeTermsFeedback"></div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg w-100 auth-btn" id="registerBtn">
+                <span class="btn-text">Create Account</span>
+                <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p class="mb-0">
+                Already have an account? 
+                <a href="/login" class="auth-link">Sign In</a>
+            </p>
+        </div>
+    </div>
+    
+    <div class="auth-background">
+        <div class="glass-circle circle-1"></div>
+        <div class="glass-circle circle-2"></div>
+        <div class="glass-circle circle-3"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const btnText = registerBtn.querySelector('.btn-text');
+    const spinner = registerBtn.querySelector('.spinner-border');
+    const passwordInput = document.getElementById('password');
+    
+    // Password visibility toggle for all toggle buttons
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const passwordInput = document.getElementById(this.dataset.target);
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        });
+    });
+    
+    // Password strength meter
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        const requirements = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        };
+        
+        // Update requirement indicators
+        Object.keys(requirements).forEach(req => {
+            const element = document.getElementById('req' + req.charAt(0).toUpperCase() + req.slice(1));
+            const icon = element.querySelector('i');
+            
+            if (requirements[req]) {
+                element.classList.remove('text-muted');
+                element.classList.add('text-success');
+                icon.classList.remove('bi-circle');
+                icon.classList.add('bi-check-circle-fill');
+                strength++;
+            } else {
+                element.classList.add('text-muted');
+                element.classList.remove('text-success');
+                icon.classList.add('bi-circle');
+                icon.classList.remove('bi-check-circle-fill');
+            }
+        });
+        
+        // Update strength bar
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        const percentage = (strength / 5) * 100;
+        
+        strengthBar.style.width = percentage + '%';
+        
+        if (strength <= 2) {
+            strengthBar.style.backgroundColor = '#ef4444';
+            strengthText.textContent = 'Weak';
+            strengthText.style.color = '#ef4444';
+        } else if (strength <= 3) {
+            strengthBar.style.backgroundColor = '#f59e0b';
+            strengthText.textContent = 'Fair';
+            strengthText.style.color = '#f59e0b';
+        } else if (strength <= 4) {
+            strengthBar.style.backgroundColor = '#3b82f6';
+            strengthText.textContent = 'Good';
+            strengthText.style.color = '#3b82f6';
+        } else {
+            strengthBar.style.backgroundColor = '#10b981';
+            strengthText.textContent = 'Strong';
+            strengthText.style.color = '#10b981';
+        }
+        
+        return strength;
+    }
+    
+    passwordInput.addEventListener('input', function() {
+        if (this.value) {
+            checkPasswordStrength(this.value);
+        } else {
+            // Reset meter
+            document.getElementById('strengthBar').style.width = '0%';
+            document.getElementById('strengthText').textContent = '';
+            document.querySelectorAll('.password-requirements li').forEach(li => {
+                li.classList.add('text-muted');
+                li.classList.remove('text-success');
+                const icon = li.querySelector('i');
+                icon.classList.add('bi-circle');
+                icon.classList.remove('bi-check-circle-fill');
+            });
+        }
+    });
+    
+    // Email validation
+    function validateEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    }
+    
+    // Show field error
+    function showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const feedback = document.getElementById(fieldId + 'Feedback');
+        if (field && feedback) {
+            field.classList.add('is-invalid');
+            feedback.textContent = message;
+            feedback.style.display = 'block';
+        }
+    }
+    
+    // Clear field error
+    function clearFieldError(fieldId) {
+        const field = document.getElementById(fieldId);
+        const feedback = document.getElementById(fieldId + 'Feedback');
+        if (field && feedback) {
+            field.classList.remove('is-invalid');
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+        }
+    }
+    
+    // Set loading state
+    function setLoading(loading) {
+        if (loading) {
+            registerBtn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+        } else {
+            registerBtn.disabled = false;
+            btnText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        }
+    }
+    
+    // Form submission
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const agreeTerms = document.getElementById('agreeTerms').checked;
+        
+        // Clear previous errors
+        ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'agreeTerms'].forEach(clearFieldError);
+        
+        // Validate fields
+        let hasError = false;
+        
+        if (!firstName) {
+            showFieldError('firstName', 'First name is required');
+            hasError = true;
+        }
+        
+        if (!lastName) {
+            showFieldError('lastName', 'Last name is required');
+            hasError = true;
+        }
+        
+        if (!email) {
+            showFieldError('email', 'Email is required');
+            hasError = true;
+        } else if (!validateEmail(email)) {
+            showFieldError('email', 'Please enter a valid email address');
+            hasError = true;
+        }
+        
+        if (!password) {
+            showFieldError('password', 'Password is required');
+            hasError = true;
+        } else if (password.length < 8) {
+            showFieldError('password', 'Password must be at least 8 characters');
+            hasError = true;
+        }
+        
+        if (!confirmPassword) {
+            showFieldError('confirmPassword', 'Please confirm your password');
+            hasError = true;
+        } else if (password !== confirmPassword) {
+            showFieldError('confirmPassword', 'Passwords do not match');
+            hasError = true;
+        }
+        
+        if (!agreeTerms) {
+            showFieldError('agreeTerms', 'You must agree to the terms');
+            hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        setLoading(true);
+        
+        try {
+            const response = await api.post('/auth/register', {
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                password: password
+            });
+            
+            await Swal.fire({
+                icon: 'success',
+                title: 'Account Created',
+                text: 'Your account has been created successfully! Redirecting to login...',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Registration error:', error);
+            
+            let errorMessage = 'An error occurred during registration';
+            
+            if (error.status === 409) {
+                errorMessage = 'An account with this email already exists';
+            } else if (error.status === 422) {
+                if (error.data && error.data.detail) {
+                    errorMessage = error.data.detail;
+                }
+            } else if (error.data && error.data.detail) {
+                errorMessage = error.data.detail;
+            }
+            
+            await Swal.fire({
+                icon: 'error',
+                title: 'Registration Failed',
+                text: errorMessage
+            });
+        } finally {
+            setLoading(false);
+        }
+    });
+    
+    // Clear errors on input
+    ['firstName', 'lastName', 'email', 'password', 'confirmPassword'].forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                clearFieldError(fieldId);
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="d-flex align-items-center justify-content-center min-vh-75">
+        <div class="card glass-card p-4 text-center" style="max-width: 520px;">
+            <h1 class="display-4 mb-3">500</h1>
+            <p class="text-muted mb-4">The server hit an error while rendering this page.</p>
+            <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

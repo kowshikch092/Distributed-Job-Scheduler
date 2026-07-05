@@ -1,0 +1,164 @@
+{% extends "logs.html" %}
+
+{% block title %}Execution History - JobScheduler Pro{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Execution History</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="bi bi-clock-history text-primary"></i>
+                    Execution History
+                </h1>
+                <p class="page-subtitle text-muted">Track completed, running, and failed job executions in real time</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <button class="btn btn-outline-secondary" id="refreshExecutionsBtn">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <button class="btn btn-outline-primary ms-2" id="downloadExecutionsBtn">
+                    <i class="bi bi-download"></i> Export
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="executionStatusFilter">
+                <option value="">All Statuses</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="FAILED">Failed</option>
+                <option value="RUNNING">Running</option>
+                <option value="READY">Ready</option>
+                <option value="WAITING">Waiting</option>
+                <option value="DEAD">Dead</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Worker</label>
+            <select class="form-select" id="executionWorkerFilter">
+                <option value="">All Workers</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Time Range</label>
+            <select class="form-select" id="executionTimeFilter">
+                <option value="15m">Last 15 minutes</option>
+                <option value="1h">Last hour</option>
+                <option value="6h">Last 6 hours</option>
+                <option value="24h">Last 24 hours</option>
+                <option value="7d">Last 7 days</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Search</label>
+            <input type="text" class="form-control" id="executionSearch" placeholder="Search executions...">
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-primary-subtle">
+                        <i class="bi bi-clock-history text-primary"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Executions</div>
+                        <div class="stat-value" id="totalExecutionEntries">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-success-subtle">
+                        <i class="bi bi-check-circle text-success"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Completed</div>
+                        <div class="stat-value" id="completedExecutionCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-danger-subtle">
+                        <i class="bi bi-x-circle text-danger"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Failed</div>
+                        <div class="stat-value" id="failedExecutionCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-info-subtle">
+                        <i class="bi bi-play-circle text-info"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Running</div>
+                        <div class="stat-value" id="runningExecutionCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-warning-subtle">
+                        <i class="bi bi-hourglass-split text-warning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Pending</div>
+                        <div class="stat-value" id="pendingExecutionCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card glass-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-list-ul"></i> Execution History
+            </h5>
+            <span class="badge bg-primary" id="executionCount">0</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="executionsTable">
+                    <thead>
+                        <tr>
+                            <th>Started</th>
+                            <th>Job</th>
+                            <th>Worker</th>
+                            <th>Status</th>
+                            <th>Duration</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/execution-manager.js') }}"></script>
+{% endblock %}

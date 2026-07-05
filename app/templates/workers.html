@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Workers - JobScheduler Pro{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Workers</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="page-title">
+                    <i class="bi bi-cpu-fill text-warning"></i>
+                    Worker Management
+                </h1>
+                <p class="page-subtitle text-muted">Monitor worker health and performance</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <button class="btn btn-outline-secondary" id="refreshWorkersBtn">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <div class="btn-group ms-2">
+                    <button class="btn btn-outline-success" id="startAllWorkersBtn">
+                        <i class="bi bi-play-fill"></i> Start All
+                    </button>
+                    <button class="btn btn-outline-danger" id="stopAllWorkersBtn">
+                        <i class="bi bi-stop-fill"></i> Stop All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Worker Stats -->
+    <div class="row worker-stats mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-success-subtle">
+                        <i class="bi bi-wifi text-success"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Online Workers</div>
+                        <div class="stat-value text-success" id="onlineWorkersCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-danger-subtle">
+                        <i class="bi bi-wifi-off text-danger"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Offline Workers</div>
+                        <div class="stat-value text-danger" id="offlineWorkersCount">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-info-subtle">
+                        <i class="bi bi-cpu text-info"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Avg CPU Usage</div>
+                        <div class="stat-value" id="avgCpuUsage">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="stat-card glass-card">
+                <div class="stat-card-body">
+                    <div class="stat-icon bg-warning-subtle">
+                        <i class="bi bi-memory text-warning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Avg Memory Usage</div>
+                        <div class="stat-value" id="avgMemoryUsage">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workers Grid -->
+    <div class="row" id="workersGrid"></div>
+
+    <!-- Pagination -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav id="workersPagination">
+                <ul class="pagination justify-content-center"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Worker Details Modal -->
+<div class="modal fade" id="workerDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-cpu"></i> Worker Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="workerDetailsContent"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', path='/js/workers.js') }}"></script>
+{% endblock %}
