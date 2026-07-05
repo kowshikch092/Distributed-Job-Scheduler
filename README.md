@@ -545,4 +545,4 @@ This is currently a personal/assignment project and not actively seeking externa
 
 ## Contact
 
-- **GitHub:** [github.com/\kowshikch092\](https://github.com/<username>)
+- **GitHub:** github.com/\kowshikch092\
